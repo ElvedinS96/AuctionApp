@@ -73,7 +73,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/bid", "/bid/*")
                 .hasAnyAuthority(RoleEnum.ADMIN.name(), RoleEnum.SELLER.name(), RoleEnum.USER.name())
                 .antMatchers(HttpMethod.POST, "/bid", "/bid/*")
-                .hasAnyAuthority(RoleEnum.ADMIN.name(), RoleEnum.SELLER.name(), RoleEnum.USER.name())
+                .permitAll()
                 .antMatchers(HttpMethod.PUT, "/bid", "/bid/*")
                 .denyAll()
                 .antMatchers(HttpMethod.DELETE, "/bid", "/bid/*")
