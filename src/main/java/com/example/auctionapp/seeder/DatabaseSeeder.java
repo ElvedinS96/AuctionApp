@@ -3,13 +3,7 @@ package com.example.auctionapp.seeder;
 import com.example.auctionapp.enumeration.ColorEnum;
 import com.example.auctionapp.enumeration.RoleEnum;
 import com.example.auctionapp.enumeration.SizeEnum;
-import com.example.auctionapp.model.Category;
-import com.example.auctionapp.model.Image;
-import com.example.auctionapp.model.Product;
-import com.example.auctionapp.model.Rating;
-import com.example.auctionapp.model.Role;
-import com.example.auctionapp.model.Subcategory;
-import com.example.auctionapp.model.User;
+import com.example.auctionapp.model.*;
 import com.example.auctionapp.repository.BaseRepository;
 import com.example.auctionapp.repository.ProductRepository;
 import com.example.auctionapp.repository.UserRepository;
@@ -42,6 +36,8 @@ public class DatabaseSeeder {
     private final ProductRepository productRepository;
     private final BaseRepository<Rating> ratingRepository;
     private final BaseRepository<Image> imageRepository;
+    private final BaseRepository<City> cityRepository;
+    private final BaseRepository<Country> countryRepository;
 
     @Autowired
     public DatabaseSeeder(PasswordEncoder passwordEncoder,
@@ -51,7 +47,10 @@ public class DatabaseSeeder {
                           BaseRepository<Subcategory> subcategoryRepository,
                           ProductRepository productRepository,
                           BaseRepository<Rating> ratingRepository,
-                          BaseRepository<Image> imageRepository) {
+                          BaseRepository<Image> imageRepository,
+                          BaseRepository<City> cityRepository,
+                          BaseRepository<Country> countryRepository
+                          ) {
         this.passwordEncoder = passwordEncoder;
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
@@ -60,6 +59,8 @@ public class DatabaseSeeder {
         this.productRepository = productRepository;
         this.ratingRepository = ratingRepository;
         this.imageRepository = imageRepository;
+        this.cityRepository = cityRepository;
+        this.countryRepository = countryRepository;
     }
 
     @EventListener
@@ -70,6 +71,34 @@ public class DatabaseSeeder {
         seedSubcategoryTable();
         seedProductTable();
         seedRatingTable();
+        seedCountryTable();
+        seedCityTable();
+    }
+
+    private void seedCountryTable() {
+        List<Country> countries = countryRepository.findAll();
+        if(countries.isEmpty()) {
+            countryRepository.create(new Country("Bosnia and Herzegovina"));
+            countryRepository.create(new Country("Croatia"));
+            countryRepository.create(new Country("Germany"));
+        }
+    }
+
+    private void seedCityTable() {
+        List<City> cities = cityRepository.findAll();
+        if(cities.isEmpty()) {
+            cityRepository.create(new City("Jajce", countryRepository.findById(1L)));
+            cityRepository.create(new City("Sarajevo", countryRepository.findById(1L)));
+            cityRepository.create(new City("Mostar", countryRepository.findById(1L)));
+
+            cityRepository.create(new City("Zagreb",  countryRepository.findById(2L)));
+            cityRepository.create(new City("Split", countryRepository.findById(2L)));
+            cityRepository.create(new City("Varazdin", countryRepository.findById(2L)));
+
+            cityRepository.create(new City("Berlin", countryRepository.findById(3L)));
+            cityRepository.create(new City("Hamburg", countryRepository.findById(3L)));
+            cityRepository.create(new City("Dresden", countryRepository.findById(3L)));
+        }
     }
 
     private void seedRoleTable() {
@@ -84,98 +113,110 @@ public class DatabaseSeeder {
     }
 
     private void seedUserTable() {
-        List<User> users = userRepository.findAll();
-        if(users.isEmpty()) {
+        List<UserAccount> userAccounts = userRepository.findAll();
+        if(userAccounts.isEmpty()) {
             Image image = imageRepository.create(new Image("https://cactusthemes.com/blog/wp-content/uploads/2018/01/tt_avatar_small.jpg"));
-            userRepository.create(new User(
-               "Roger",
-               "Federer",
-               "roger@mail.com",
-                    passwordEncoder.encode("password"),
-                    roleRepository.findById(1L),
-                    image
+            userRepository.create(new UserAccount(
+                   new UserRegisterInformation(
+                           "Roger",
+                           "Federer",
+                           "roger@mail.com",
+                           passwordEncoder.encode("password"),
+                           roleRepository.findById(1L),
+                           image
+                   ),
+                    new UserDetails(new Address(), new CardInformation())
             ));
 
-            userRepository.create(new User(
-                    "Rafa",
+            userRepository.create(new UserAccount(
+                   new UserRegisterInformation( "Rafa",
                     "Nadal",
                     "rafa@mail.com",
                     passwordEncoder.encode("password"),
                     roleRepository.findById(2L),
-                    image
+                    image),
+                    new UserDetails(new Address(), new CardInformation())
             ));
 
-            userRepository.create(new User(
-                    "Nole",
+            userRepository.create(new UserAccount(
+                    new UserRegisterInformation("Nole",
                     "Joker",
                     "nole@mail.com",
                     passwordEncoder.encode("password"),
                     roleRepository.findById(3L),
-                    image
+                    image),
+                    new UserDetails(new Address(), new CardInformation())
             ));
 
-            userRepository.create(new User(
-                    "User",
+            userRepository.create(new UserAccount(
+                    new UserRegisterInformation("User",
                     "First",
                     "tester1@mail.com",
                     passwordEncoder.encode("password"),
                     roleRepository.findById(2L),
-                    image
+                    image),
+                    new UserDetails(new Address(), new CardInformation())
             ));
 
-            userRepository.create(new User(
-                    "User",
+            userRepository.create(new UserAccount(
+                    new UserRegisterInformation("User",
                     "Second",
                     "tester2@mail.com",
                     passwordEncoder.encode("password"),
                     roleRepository.findById(2L),
-                    image
+                    image),
+                    new UserDetails(new Address(), new CardInformation())
             ));
 
-            userRepository.create(new User(
-                    "Seller",
+            userRepository.create(new UserAccount(
+                    new UserRegisterInformation("Seller",
                     "First",
                     "seller1@mail.com",
                     passwordEncoder.encode("password"),
                     roleRepository.findById(3L),
-                    image
+                    image),
+                    new UserDetails(new Address(), new CardInformation())
             ));
 
-            userRepository.create(new User(
-                    "Seller",
+            userRepository.create(new UserAccount(
+                    new UserRegisterInformation("Seller",
                     "Second",
                     "seller2@mail.com",
                     passwordEncoder.encode("password"),
                     roleRepository.findById(3L),
-                    image
+                    image),
+                    new UserDetails(new Address(), new CardInformation())
             ));
 
-            userRepository.create(new User(
-                    "Admin",
+            userRepository.create(new UserAccount(
+                    new UserRegisterInformation("Admin",
                     "First",
                     "admin1@mail.com",
                     passwordEncoder.encode("password"),
                     roleRepository.findById(1L),
-                    image
+                    image),
+                    new UserDetails(new Address(), new CardInformation())
             ));
 
-            userRepository.create(new User(
-                    "Admin",
+            userRepository.create(new UserAccount(
+                    new UserRegisterInformation("Admin",
                     "Second",
                     "admin2@mail.com",
                     passwordEncoder.encode("password"),
                     roleRepository.findById(1L),
-                    image
+                    image),
+                    new UserDetails(new Address(), new CardInformation())
             ));
 
             Image image2 = imageRepository.create(new Image("https://www.shareicon.net/data/512x512/2016/07/26/802031_user_512x512.png"));
-            userRepository.create(new User(
-                    "Serena",
+            userRepository.create(new UserAccount(
+                    new UserRegisterInformation("Serena",
                     "Williams",
                     "serena@mail.com",
                     passwordEncoder.encode("password"),
                     roleRepository.findById(3L),
-                    image2
+                    image2),
+                    new UserDetails(new Address(), new CardInformation())
             ));
 
             logger.info("User table seeded");
@@ -208,7 +249,7 @@ public class DatabaseSeeder {
             subcategoryRepository.create(new Subcategory("Dress", categories.get(0)));
             subcategoryRepository.create(new Subcategory("Shirt", categories.get(0)));
             subcategoryRepository.create(new Subcategory("Jacket", categories.get(0)));
-            subcategoryRepository.create(new Subcategory("Waller", categories.get(1)));
+            subcategoryRepository.create(new Subcategory("Wallet", categories.get(1)));
             subcategoryRepository.create(new Subcategory("Belt", categories.get(1)));
             subcategoryRepository.create(new Subcategory("Desk", categories.get(5)));
             subcategoryRepository.create(new Subcategory("Boots", categories.get(3)));
@@ -239,9 +280,9 @@ public class DatabaseSeeder {
     private void seedProductTable() {
         List<Product> products = productRepository.findAll();
         List<Subcategory> subcategories = subcategoryRepository.findAll();
-        List<User> users = userRepository.findAll();
-        User seller = users.get(2);
-        User seller2 = users.get(3);
+        List<UserAccount> userAccounts = userRepository.findAll();
+        UserAccount seller = userAccounts.get(2);
+        UserAccount seller2 = userAccounts.get(3);
         List<Image> images = new ArrayList<>();
         if(products.isEmpty()) {
             final String description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
@@ -264,7 +305,7 @@ public class DatabaseSeeder {
             );
 
             images=new ArrayList<>();
-            images.add(new Image("https://firebasestorage.googleapis.com/v0/b/auction-internship-app.appspot.com/o/images%2F9YR98_AS05.jpg?alt=media&token=67ae4719-dfc0-40f8-8b54-d83f9ec89992"));
+            images.add(new Image("https://pngimg.com/uploads/leather_jacket/leather_jacket_PNG35.png"));
             images.add(new Image("https://firebasestorage.googleapis.com/v0/b/auction-internship-app.appspot.com/o/images%2F9YR98_AS05.jpg?alt=media&token=67ae4719-dfc0-40f8-8b54-d83f9ec89992"));
             productRepository.create(new Product("Brown Jacket",
                                                 description,
@@ -351,7 +392,7 @@ public class DatabaseSeeder {
             images=new ArrayList<>();
             images.add(new Image("https://firebasestorage.googleapis.com/v0/b/auction-internship-app.appspot.com/o/images%2F1-42-9714512230_xxl.webp?alt=media&token=f772ad4c-b352-41c2-bf2c-a320c11166e5"));
             images.add(new Image("https://firebasestorage.googleapis.com/v0/b/auction-internship-app.appspot.com/o/images%2F1-42-9714512230_xxl.webp?alt=media&token=f772ad4c-b352-41c2-bf2c-a320c11166e5"));
-            productRepository.create(new Product("Tennis shoes",
+            productRepository.create(new Product("Tennis Shoes",
                                                 description,
                                                 375.,
                                                 subcategories.get(8),
@@ -402,7 +443,7 @@ public class DatabaseSeeder {
             images=new ArrayList<>();
             images.add(new Image("https://firebasestorage.googleapis.com/v0/b/auction-internship-app.appspot.com/o/images%2F1-42-9714512230_xxl.webp?alt=media&token=f772ad4c-b352-41c2-bf2c-a320c11166e5"));
             images.add(new Image("https://firebasestorage.googleapis.com/v0/b/auction-internship-app.appspot.com/o/images%2F1-42-9714512230_xxl.webp?alt=media&token=f772ad4c-b352-41c2-bf2c-a320c11166e5"));
-            productRepository.create(new Product("Tennis shoes",
+            productRepository.create(new Product("Tennis Shoes",
                             description,
                             713.55,
                             subcategories.get(8),
@@ -439,15 +480,15 @@ public class DatabaseSeeder {
 
     private void seedRatingTable() {
         List<Rating> ratings = ratingRepository.findAll();
-        List<User> users = userRepository.findAll();
+        List<UserAccount> userAccounts = userRepository.findAll();
         if(ratings.isEmpty()) {
 
-            ratingRepository.create(new Rating(5, "", users.get(2)));
-            ratingRepository.create(new Rating(3, "", users.get(2)));
-            ratingRepository.create(new Rating(4, "", users.get(2)));
-            ratingRepository.create(new Rating(3, "", users.get(3)));
-            ratingRepository.create(new Rating(3, "", users.get(3)));
-            ratingRepository.create(new Rating(4, "", users.get(3)));
+            ratingRepository.create(new Rating(5, "", userAccounts.get(2)));
+            ratingRepository.create(new Rating(3, "", userAccounts.get(2)));
+            ratingRepository.create(new Rating(4, "", userAccounts.get(2)));
+            ratingRepository.create(new Rating(3, "", userAccounts.get(3)));
+            ratingRepository.create(new Rating(3, "", userAccounts.get(3)));
+            ratingRepository.create(new Rating(4, "", userAccounts.get(3)));
 
             logger.info("Rating table seeded");
         }
